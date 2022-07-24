@@ -1,8 +1,9 @@
 import React from 'react';
 export default function Footer() {
+    const year = new Date().getFullYear()
     return (
-        <footer className="footer"> 
-            <p className="footer__text">© 2020 Mesto Russia</p> 
+        <footer className="footer">
+            <p className="footer__text">© {year} Mesto Russia</p>
         </footer>
     )
 }
