@@ -8,13 +8,13 @@ export default function Main(props) {
     const [userName, setUserName] = React.useState();
     const [userDescription, setUserDescription] = React.useState();
     const [cards, setCards] = React.useState([]);
+    console.log(`Fi`)
 
     React.useEffect(() => {
         Promise.all([
             api.getUserInfo(), 
             api.getInitialCards()])
             .then(([user, cards]) => {
-                console.log(`Fi`)
                 setUserName(user.name);
                 setUserAvatar(user.avatar);
                 setUserDescription(user.about)
@@ -23,7 +23,7 @@ export default function Main(props) {
             .catch((err) => {
               console.log(`${err}, попробуйте ещё`);
             })
-    });
+    }, []);
 
     return (
         <main className="main">
