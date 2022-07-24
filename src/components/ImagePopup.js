@@ -1,5 +1,5 @@
 import React from 'react';
-export default function PopupWithImage(props) {
+export default function ImagePopup(props) {
     return (
         <section className={props.card ? `popup popup_image popup_opened` : `popup popup_image`}>
         <div className="popup__container-image">
