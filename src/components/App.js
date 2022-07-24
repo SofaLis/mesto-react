@@ -32,7 +32,7 @@ function App() {
     });
   }
 
-  const closeAllPopups = () => {
+  function closeAllPopups () {
     setIsEditProfilePopupOpen(false);
     setIsAddPlacePopupOpen(false);
     setIsEditAvatarPopupOpen(false);
