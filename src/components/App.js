@@ -10,13 +10,11 @@ import CurrentUserContext from '../contexts/CurrentUserContext';
 import EditProfilePopup from './EditProfilePopup';
 import EditAvatarPopup from './EditAvatarPopup';
 import AddPlacePopup from './AddPlacePopup';
-import DeleteCard from './DeleteCard';
 
 function App() {
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = React.useState(false);
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
-  const [isDeleteCard, setIsDeleteCard] = React.useState(false);
   const [currentUser, setCurrentUser] = React.useState({ name: '', avatar: '', about: '' });
   const [selectedCard, setSelectedCard] = React.useState({ name: '', link: '' });
   const [cards, setCards] = React.useState([]);
@@ -53,10 +51,6 @@ function App() {
     .catch((err) => {
       console.log(`${err}, попробуйте ещё`);
     })
-  };
-
-  function handleDeleteCardConfirm() {
-    handleCardDelete(currentCard);
   }
 
   function handleEditAvatarClick() {
@@ -82,7 +76,6 @@ function App() {
     setIsEditProfilePopupOpen(false);
     setIsAddPlacePopupOpen(false);
     setIsEditAvatarPopupOpen(false);
-    setIsDeleteCard(false);
     setSelectedCard({ name: '', link: '' });
   }
 
@@ -108,16 +101,25 @@ function App() {
     })   
   }
 
-  function handleAddCard(card){
-    api.addCard(card)
+  function handleUpdateAvatar(avatar){
+    api.editAvatar(avatar)
     .then ((res)=>{
-      setCards([res,...cards]);
+      setCurrentUser(res);
       closeAllPopups();
     })
     .catch((err) => {
       console.log(`${err}, попробуйте ещё`);
     })   
-  }
+  };
+
+  function handleAddPlaceSubmit(card){
+    api.addCard(card)
+    .then ((res)=>{
+        setCards([res,...cards]);
+        closeAllPopups();
+    })
+    .catch(err=>console.log(err))   
+}
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
@@ -131,7 +133,7 @@ function App() {
         
         <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onClose={closeAllPopups} onUpdateAvatar={handleUpdateAvatar} />
 
-        <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} onAddPlace={handleAddCard} />
+        <AddPlacePopup isOpen={isAddPlacePopupOpen} onClose={closeAllPopups} onAddPlace={handleAddPlaceSubmit} />
 
         <ImagePopup card={selectedCard} onClose={closeAllPopups} />
       </div>

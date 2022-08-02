@@ -26,6 +26,7 @@ export default function AddPlacePopup(props) {
             link
         });
     } 
+    
 
     return (
         <PopupWithForm buttonText={'Создать'} name={`cards`} title={`Новое место`} isOpen={props.isOpen} 
