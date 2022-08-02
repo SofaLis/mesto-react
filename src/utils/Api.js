@@ -84,8 +84,16 @@ class Api {
         })
     };
 
+    changeLikeCardStatus(cardId, isLiked) {
+        if (isLiked) {
+            return this._like(cardId);
+        } else {
+            return this._dltLike(cardId);        
+        }
+    }
+
     //Постановка лайка
-    like(cardId) {
+    _like(cardId) {
         return fetch(`${this._baseUrl}/cards/${cardId}/likes`, { 
           method: 'PUT', 
           headers: this._headers,
@@ -96,7 +104,7 @@ class Api {
     };
 
     //Удаление лайка
-    dltLike(cardId) {
+    _dltLike(cardId) {
         return fetch(`${this._baseUrl}/cards/${cardId}/likes`, { 
             method: 'DELETE', 
             headers: this._headers,
