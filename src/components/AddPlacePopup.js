@@ -17,7 +17,7 @@ export default function AddPlacePopup(props) {
     React.useEffect(() => {
         setName('');
         setLink('');
-    }, []);
+    }, [props.isOpen]);
 
     function handleSubmit(e) {
         e.preventDefault();
@@ -37,7 +37,6 @@ export default function AddPlacePopup(props) {
         <input type="url" id="card-link-input" className="popup__item popup__item_card_link" value={link} onChange={handleChangeLink}
         name="link" placeholder="Ссылка на картинку" required></input> 
         <span className="popup__input-error card-link-input-error"></span> 
-
       </PopupWithForm>
     )
 }
