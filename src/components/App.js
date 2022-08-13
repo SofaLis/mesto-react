@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch, Redirect } from 'react-router-dom';
 import Header from './Header';
 import Main from './Main';
 import Footer from './Footer';
@@ -19,6 +19,7 @@ function App() {
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = React.useState(false);
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
+  const [isLoggedIn, setIsisLoggedIn] = React.useState(true);
   const [currentUser, setCurrentUser] = React.useState({ name: '', avatar: '', about: '' });
   const [selectedCard, setSelectedCard] = React.useState({ name: '', link: '' });
   const [cards, setCards] = React.useState([]);
@@ -132,16 +133,18 @@ function App() {
         <Header />
         <Switch>
           <ProtectedRoute exact path="/" component={Main} onEditProfile={handleEditProfileClick} onAddPlace={handleAddPlaceClick} onEditAvatar={handleEditAvatarClick}
-            onCardClick={handleCardClick} cards={cards} onCardLike={handleCardLike} onCardDelete={handleCardDelete} loggedIn={true} />
+            onCardClick={handleCardClick} cards={cards} onCardLike={handleCardLike} onCardDelete={handleCardDelete} isLoggedIn={isLoggedIn} />
+          <ProtectedRoute exact path="/" component={Footer} isLoggedIn={isLoggedIn} />
           <Route path="/sign-up">
             <Register />
           </Route>
           <Route path="/sign-in">
             <LogIn />
           </Route>
+          <Route>
+            <Redirect to={!isLoggedIn ? "/sign-up" : "/"} />
+          </Route>
         </Switch>
-
-        <ProtectedRoute exact path="/" component={Footer} loggedIn={true} />
 
         <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser} />
 

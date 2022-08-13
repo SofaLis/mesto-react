@@ -14,10 +14,10 @@ export default function Header() {
                         <Link to='/sign-in' className="header__out">Выйти</Link>
                     </div>
                 </Route>
-                <Route exact path="/sign-in">
+                <Route path="/sign-in">
                     <Link to="/sign-up" className="header__authorization">Регистрация</Link>
                 </Route>
-                <Route exact path="/sign-up">
+                <Route path="/sign-up">
                     <Link to="/sign-in" className="header__authorization">Войти</Link>
                 </Route>
             </Switch>
