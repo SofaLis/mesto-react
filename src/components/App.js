@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { Route, Switch, Redirect } from 'react-router-dom';
+import { Route, Switch, Redirect, useHistory } from 'react-router-dom';
 import Header from './Header';
 import Main from './Main';
 import Footer from './Footer';
@@ -14,15 +13,22 @@ import Register from './Register';
 import LogIn from './LogIn';
 import InfoTooltip from './InfoTooltip';
 import ProtectedRoute from "./ProtectedRoute";
+import * as auth from '../utils/auth';
 
 function App() {
   const [isEditAvatarPopupOpen, setIsEditAvatarPopupOpen] = React.useState(false);
   const [isEditProfilePopupOpen, setIsEditProfilePopupOpen] = React.useState(false);
   const [isAddPlacePopupOpen, setIsAddPlacePopupOpen] = React.useState(false);
-  const [isLoggedIn, setIsisLoggedIn] = React.useState(true);
+  const [isLoggedIn, setIsisLoggedIn] = React.useState(false);
+  const [isInfoTooltipPopupOpen, setIsInfoTooltipPopupOpen] = React.useState(false);
+  const [isAuthorization, setIsAuthorization] = React.useState(false);
+
+  const [email, setEmail] = React.useState('')
   const [currentUser, setCurrentUser] = React.useState({ name: '', avatar: '', about: '' });
   const [selectedCard, setSelectedCard] = React.useState({ name: '', link: '' });
   const [cards, setCards] = React.useState([]);
+
+  const history = useHistory();
 
   React.useEffect(() => {
     Promise.all([
@@ -81,6 +87,7 @@ function App() {
     setIsEditProfilePopupOpen(false);
     setIsAddPlacePopupOpen(false);
     setIsEditAvatarPopupOpen(false);
+    setIsInfoTooltipPopupOpen(false)
     setSelectedCard({ name: '', link: '' });
   }
 
@@ -126,25 +133,82 @@ function App() {
       .catch(err => console.log(err))
   }
 
+
+  function handleRegister(data) {
+    auth.register(data)
+      .then(() => {
+        setIsInfoTooltipPopupOpen(true)
+        setIsAuthorization(true)
+        history.push('/');
+      })
+      .catch(() => {
+        setIsInfoTooltipPopupOpen(true)
+        setIsAuthorization(false)
+      })
+  }
+
+  function handleLogIn(data) {
+    setIsAuthorization(true)
+    setEmail(data.email);
+    auth.authorize(data)
+      .then((res) => {
+        if (res.token) {
+          localStorage.setItem("jwt", res.token);
+          history.push('/');
+        }
+      })
+      .catch((err) => {
+        setIsInfoTooltipPopupOpen(true);
+        setIsAuthorization(false);
+      })
+  }
+
+  React.useEffect(() => {
+    function handleTokenCheck() {
+      auth.getContent()
+        .then((res) => {
+          setIsisLoggedIn(true);
+          setEmail(res.data.email);
+          history.push("/");
+        })
+        .catch((err) => {
+          console.log(`Ошибка: ${err}`);
+          history.push("/sign-in");
+        });
+    }
+  }, [])
+
+
+  function handleSignOut() {
+    localStorage.removeItem("jwt");
+    setIsisLoggedIn(false);
+  }
+
+
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
 
-        <Header />
+        <Header email={email} onClick={handleSignOut} />
+
         <Switch>
           <ProtectedRoute exact path="/" component={Main} onEditProfile={handleEditProfileClick} onAddPlace={handleAddPlaceClick} onEditAvatar={handleEditAvatarClick}
             onCardClick={handleCardClick} cards={cards} onCardLike={handleCardLike} onCardDelete={handleCardDelete} isLoggedIn={isLoggedIn} />
-          <ProtectedRoute exact path="/" component={Footer} isLoggedIn={isLoggedIn} />
+
           <Route path="/sign-up">
-            <Register />
+            <Register onRegister={handleRegister} />
           </Route>
           <Route path="/sign-in">
-            <LogIn />
+            <LogIn onRegister={handleLogIn} />
           </Route>
+
           <Route>
-            <Redirect to={!isLoggedIn ? "/sign-up" : "/"} />
+            {isLoggedIn ? <Redirect to='/' /> : <Redirect to='/sign-in' />}
           </Route>
+
         </Switch>
+
+        {isLoggedIn && <Footer />}
 
         <EditProfilePopup isOpen={isEditProfilePopupOpen} onClose={closeAllPopups} onUpdateUser={handleUpdateUser} />
 
@@ -154,7 +218,7 @@ function App() {
 
         <ImagePopup card={selectedCard} onClose={closeAllPopups} />
 
-        <InfoTooltip />
+        <InfoTooltip onClose={closeAllPopups} isOpen={isInfoTooltipPopupOpen} isAuthorization={isAuthorization} />
       </div>
     </CurrentUserContext.Provider>
   );
