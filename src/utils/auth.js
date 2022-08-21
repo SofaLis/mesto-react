@@ -13,9 +13,12 @@ export function register(data) {
     })
   })
     .then((res) => {
-      return res.json();
+      if (res.ok) {
+        return res.json()
+      } else {
+        return Promise.reject(`Ошибка  ${res.status}`)
+      }
     })
-    .catch((err) => console.log(err));
 }
 
 
@@ -31,9 +34,12 @@ export function authorize(data) {
     })
   })
     .then((res) => {
-      return res.json();
+      if (res.ok) {
+        return res.json()
+      } else {
+        return Promise.reject(`Ошибка  ${res.status}`)
+      }
     })
-    .catch((err) => console.log(err));
 };
 
 export function getContent() {
@@ -45,10 +51,16 @@ export function getContent() {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${token}`
       }
+
     })
-    .then((res) => {
-      return res.json();
-    })
-    .catch((err) => console.log(err));
+      .then((res) => {
+        if (res.ok) {
+          return res.json()
+        } else {
+          return Promise.reject(`Ошибка  ${res.status}`)
+        }
+      })
+  } else {
+    return Promise.reject(`Ошибка: пользователь не авторизован `)
   }
 }
