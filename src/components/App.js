@@ -22,6 +22,7 @@ function App() {
   const [isLoggedIn, setIsisLoggedIn] = React.useState(false);
   const [isInfoTooltipPopupOpen, setIsInfoTooltipPopupOpen] = React.useState(false);
   const [isAuthorization, setIsAuthorization] = React.useState(false);
+  const [isAuthorizationText, setIsAuthorizationText] = React.useState('');
 
   const [email, setEmail] = React.useState('')
   const [currentUser, setCurrentUser] = React.useState({ name: '', avatar: '', about: '' });
@@ -31,17 +32,19 @@ function App() {
   const history = useHistory();
 
   React.useEffect(() => {
-    Promise.all([
-      api.getUserInfo(),
-      api.getInitialCards()])
-      .then(([user, cards]) => {
-        setCurrentUser(user);
-        setCards(cards);
-      })
-      .catch((err) => {
-        console.log(`${err}, попробуйте ещё`);
-      })
-  }, []);
+    if (isLoggedIn) {
+      Promise.all([
+        api.getUserInfo(),
+        api.getInitialCards()])
+        .then(([user, cards]) => {
+          setCurrentUser(user);
+          setCards(cards);
+        })
+        .catch((err) => {
+          console.log(`${err}, попробуйте ещё`);
+        })
+    }
+  }, [isLoggedIn]);
 
   function handleCardLike(card) {
     const isLiked = card.likes.some(i => i._id === currentUser._id);
@@ -155,14 +158,17 @@ function App() {
         if (res.token) {
           setIsisLoggedIn(true);
           setIsAuthorization(true)
+          setIsAuthorizationText('Вы успешно зарегистрировались!')
+          setIsInfoTooltipPopupOpen(true)
           setEmail(data.email);
           localStorage.setItem("jwt", res.token);
           history.push('/');
         }
       })
       .catch(() => {
+        setIsAuthorizationText('Что-то пошло не так! Попробуйте ещё раз.');
+        setIsAuthorization(false)
         setIsInfoTooltipPopupOpen(true);
-        setIsAuthorization(false);
       })
   }
 
@@ -171,13 +177,15 @@ function App() {
       .then((res) => {
         setIsisLoggedIn(true);
         setEmail(data.email);
-        setIsInfoTooltipPopupOpen(true)
         setIsAuthorization(true)
+        setIsAuthorizationText('Вы успешно зарегистрировались!')
+        setIsInfoTooltipPopupOpen(true)
         history.push('/');
       })
       .catch(() => {
-        setIsInfoTooltipPopupOpen(true)
         setIsAuthorization(false)
+        setIsAuthorizationText('Что-то пошло не так! Попробуйте ещё раз.')
+        setIsInfoTooltipPopupOpen(true)
       })
   }
 
@@ -186,7 +194,6 @@ function App() {
     setIsisLoggedIn(false);
     history.push('/sign-in');
   }
-
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
@@ -201,6 +208,7 @@ function App() {
           <Route path="/sign-up">
             <Register onRegister={handleRegister} />
           </Route>
+
           <Route path="/sign-in">
             <LogIn onRegister={handleLogIn} />
           </Route>
@@ -221,7 +229,7 @@ function App() {
 
         <ImagePopup card={selectedCard} onClose={closeAllPopups} />
 
-        <InfoTooltip onClose={closeAllPopups} isOpen={isInfoTooltipPopupOpen} isAuthorization={isAuthorization} />
+        <InfoTooltip onClose={closeAllPopups} isOpen={isInfoTooltipPopupOpen} isAuthorizationText={isAuthorizationText} isAuthorization={isAuthorization} />
       </div>
     </CurrentUserContext.Provider>
   );

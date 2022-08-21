@@ -1,5 +1,7 @@
 import React from 'react';
+
 export default function ImagePopup(props) {
+  
   return (
     <section className={props.card.link ? `popup popup_image popup_opened` : `popup popup_image`}>
       <div className="popup__container-image">

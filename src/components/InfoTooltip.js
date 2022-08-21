@@ -4,14 +4,13 @@ import imgErr from '../images/Err.svg'
 
 export default function InfoTooltip(props) {
 
-
     return (
-        <section className={props.isOpen ? `popup popup_opened` : `popup`}>
+        <section className={`popup ${props.isOpen && 'popup_opened'}`}>
             <div className="popup__container popup__container_info">
                 <button type="button" className="popup__close-button" onClick={props.onClose}></button>
                 <div className='popup__check'>
                     <img className="popup__img-check" src={props.isAuthorization ? imgOk : imgErr}></img>
-                    <span className="popup__text">{props.isAuthorization ? 'Вы успешно зарегистрировались!' : 'Что-то пошло не так! Попробуйте ещё раз.'}</span>
+                    <span className="popup__text">{props.isAuthorizationText}</span>
                 </div>
             </div>
         </section>

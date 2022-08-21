@@ -1,5 +1,11 @@
 export const BASE_URL = 'https://auth.nomoreparties.co';
 
+function testStatus(res) {
+  if (res.ok) {
+    return res.json();
+  }
+  return Promise.reject(`${res}`);
+}
 
 export function register(data) {
   return fetch(`${BASE_URL}/signup`, {
@@ -12,15 +18,8 @@ export function register(data) {
       password: data.password,
     })
   })
-    .then((res) => {
-      if (res.ok) {
-        return res.json()
-      } else {
-        return Promise.reject(`Ошибка  ${res.status}`)
-      }
-    })
+    .then(testStatus)
 }
-
 
 export function authorize(data) {
   return fetch(`${BASE_URL}/signin`, {
@@ -33,13 +32,7 @@ export function authorize(data) {
       password: data.password,
     })
   })
-    .then((res) => {
-      if (res.ok) {
-        return res.json()
-      } else {
-        return Promise.reject(`Ошибка  ${res.status}`)
-      }
-    })
+    .then(testStatus)
 };
 
 export function getContent() {
@@ -51,15 +44,8 @@ export function getContent() {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${token}`
       }
-
     })
-      .then((res) => {
-        if (res.ok) {
-          return res.json()
-        } else {
-          return Promise.reject(`Ошибка  ${res.status}`)
-        }
-      })
+      .then(testStatus)
   } else {
     return Promise.reject(`Ошибка: пользователь не авторизован `)
   }
